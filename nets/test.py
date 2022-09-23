@@ -1,4 +1,7 @@
+from datetime import datetime
 import sys
+import os
+from unittest import result
 sys.path.append("./")
 import cv2
 import numpy as np
@@ -33,7 +36,7 @@ def load_C3AE2(params):
         model_refresh_without_nan(models) ## hot fix which occur non-scientice gpu or cpu
     return models
 
-def predict(models, img, save_image=False):
+def predict(models, img, save_image=False, filename="igg.jpg"):
     try:
         bounds, lmarks = gen_face(MTCNN_DETECT, img, only_one=False)
         ret = MTCNN_DETECT.extract_image_chips(img, lmarks, padding=0.4)
@@ -77,7 +80,7 @@ def predict(models, img, save_image=False):
         cv2.putText(new_bd_img, '%s %s'%(int(age_label), gender_label), (padding + int(bounds[pidx][0]), padding + int(bounds[pidx][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (25, 2, 175), 2)
     if save_image:
         print(result)
-        cv2.imwrite("igg.jpg", new_bd_img)
+        cv2.imwrite(filename, new_bd_img)
     return new_bd_img, (age_label, gender_label)
 
 def test_img(params):
@@ -85,6 +88,33 @@ def test_img(params):
     models = load_branch(params)
     predict(models, img, True)
 
+
+def folder_imgs(params):
+    models = load_branch(params)
+    # assign directory
+    directory = params.folder
+    output_folder = "/"+datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + "_output"
+    out = params.output_folder + output_folder
+    os.mkdir(out)
+    
+    # iterate over files in
+    # that directory
+    result = []
+
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        # checking if it is a file
+        if os.path.isfile(f) and filename.split('.')[-1] == 'jpg':
+            prediction = predict(models, cv2.imread(f), True, out + "/"+filename)
+            result.append((filename, prediction[1]))
+    
+    with open(out + "/result.txt", "w") as f:
+        f.write(params.folder + "\n")
+        f.write("filename, age, gender \n")
+        for r in result:
+            f.write("%s, %s, %s \n" % (r[0], r[1][0], r[1][1]))
+    return result
+    
 def video(params):
     cap = cv2.VideoCapture(0)
     models = load_branch(params)
@@ -155,6 +185,18 @@ def init_parse():
         help='use cemera')
 
     parser.add_argument(
+        '-o', "--output-folder", dest="output_folder", type=str, default="./",
+    )
+
+    parser.add_argument(
+        '-uf', "--use-folder", dest="use_folder", action='store_true',
+        help='use folder',)    
+
+    parser.add_argument(
+        '-f', "--folder", dest="folder", type=str, default="./assets",
+    )
+
+    parser.add_argument(
         '-se', "--se-net", dest="se_net", action='store_true',
         help='use SE-NET')
 
@@ -171,6 +213,9 @@ if __name__ == "__main__":
     #load_local_ano(params)
     if params.video:
         video(params)
+    elif params.use_folder:
+       folder_imgs(params)
+
     else:
         if not params.image:
             raise Exception("no image!!")
