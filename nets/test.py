@@ -61,11 +61,11 @@ def predict(models, img, save_image=False, filename="igg.jpg"):
             #cv2.imwrite("test.jpg", new_bd_img[w_min:w_max, h_min:h_max, :])
             tri_imgs.append([cv2.resize(new_bd_img[w_min:w_max, h_min:h_max, :], (64, 64))])
 
-        for idx, pbox in enumerate(trible_box):
-            pbox = pbox + padding
-            h_min, w_min = pbox[0]
-            h_max, w_max = pbox[1]
-            new_bd_img = cv2.rectangle(new_bd_img, (h_min, w_min), (h_max, w_max), colors[idx], 2)
+        # for idx, pbox in enumerate(trible_box):
+        #     pbox = pbox + padding
+        #     h_min, w_min = pbox[0]
+        #     h_max, w_max = pbox[1]
+        #     new_bd_img = cv2.rectangle(new_bd_img, (h_min, w_min), (h_max, w_max), colors[idx], 2)
 
         result = models.predict(tri_imgs)
         age, gender = None, None
@@ -77,7 +77,7 @@ def predict(models, img, save_image=False, filename="igg.jpg"):
             age_label, gender_label = age[-1][-1], "unknown"
         else:
            raise Exception("fatal result: %s"%result)
-        cv2.putText(new_bd_img, '%s %s'%(int(age_label), gender_label), (padding + int(bounds[pidx][0]), padding + int(bounds[pidx][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (25, 2, 175), 2)
+        # cv2.putText(new_bd_img, '%s %s'%(int(age_label), gender_label), (padding + int(bounds[pidx][0]), padding + int(bounds[pidx][1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (25, 2, 175), 2)
     if save_image:
         print(result)
         cv2.imwrite(filename, new_bd_img)
@@ -105,7 +105,7 @@ def folder_imgs(params):
         f = os.path.join(directory, filename)
         # checking if it is a file
         if os.path.isfile(f) and filename.split('.')[-1] == 'jpg':
-            prediction = predict(models, cv2.imread(f), True, out + "/"+filename)
+            prediction = predict(models, cv2.imread(f), False, out + "/"+filename)
             result.append((filename, prediction[1]))
     
     with open(out + "/result.txt", "w") as f:
