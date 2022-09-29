@@ -93,9 +93,7 @@ def folder_imgs(params):
     models = load_branch(params)
     # assign directory
     directory = params.folder
-    output_folder = "/"+datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + "_output"
-    out = params.output_folder + output_folder
-    os.mkdir(out)
+    out = params.output_folder
     
     # iterate over files in
     # that directory
@@ -108,7 +106,7 @@ def folder_imgs(params):
             prediction = predict(models, cv2.imread(f), False, out + "/"+filename)
             result.append((filename, prediction[1]))
     
-    with open(out + "/result.txt", "w") as f:
+    with open(out + "/C3AE_"+params.dataset+"_"+datetime.now().strftime("%Y_%m_%d_%H_%M_%S")+".txt", "w") as f:
         f.write(params.folder + "\n")
         f.write("filename, age, gender \n")
         for r in result:
@@ -194,6 +192,10 @@ def init_parse():
 
     parser.add_argument(
         '-f', "--folder", dest="folder", type=str, default="./assets",
+    )
+
+    parser.add_argument(
+        '-dn', "--dataset-name", dest="dataset", type=str, default="./assets",
     )
 
     parser.add_argument(
