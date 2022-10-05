@@ -32,9 +32,9 @@ def load_C3AE2(model,  use_SE, use_white_norm):
     return models
 
 
-def predict(models, img_path, use_SE = True, use_white_norm= True, model_path = './model/c3ae_model_v2_117_5.830443-0.955'):
+def predict(img_path, with_gender = False, use_SE = True, use_white_norm= True, model_path = './model/c3ae_model_v2_117_5.830443-0.955'):
     img = cv2.imread(img_path)
-    models = load_branch(params)
+    models = load_branch(model_path, with_gender, use_SE, use_white_norm)
 
 
     try:
