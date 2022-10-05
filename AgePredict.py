@@ -8,6 +8,9 @@ import numpy as np
 import mxnet as mx
 from detect.mx_mtcnn.mtcnn_detector import MtcnnDetector
 from preproccessing.dataset_proc import gen_face, gen_boundbox
+from nets.C3AE_expand import build_net3, model_refresh_without_nan 
+from nets.C3AE import build_net
+
 MTCNN_DETECT = MtcnnDetector(model_folder=None, ctx=mx.cpu(0), num_worker=1, minsize=50, accurate_landmark=True)
 
 
@@ -18,13 +21,11 @@ def load_branch(model, with_gender, use_SE, use_white_norm):
         return load_C3AE(model, use_SE, use_white_norm)     
 
 def load_C3AE(model, use_SE, use_white_norm):
-    from nets.C3AE import build_net
     models = build_net(12, using_SE=use_SE, using_white_norm=use_white_norm)
     models.load_weights(model)
     return models
 
 def load_C3AE2(model,  use_SE, use_white_norm):
-    from nets.C3AE_expand import build_net3, model_refresh_without_nan 
     models = build_net3(12, using_SE=use_SE, using_white_norm=use_white_norm)
     if model:
         models.load_weights(model)
