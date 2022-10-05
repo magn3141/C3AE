@@ -8,9 +8,35 @@ import numpy as np
 import mxnet as mx
 from detect.mx_mtcnn.mtcnn_detector import MtcnnDetector
 from preproccessing.dataset_proc import gen_face, gen_boundbox
+MTCNN_DETECT = MtcnnDetector(model_folder=None, ctx=mx.cpu(0), num_worker=1, minsize=50, accurate_landmark=True)
 
 
-def predict(models, img):
+def load_branch(model, with_gender, use_SE, use_white_norm):
+    if with_gender:
+        return load_C3AE2(model, use_SE, use_white_norm)
+    else:
+        return load_C3AE(model, use_SE, use_white_norm)     
+
+def load_C3AE(model, use_SE, use_white_norm):
+    from C3AE import build_net
+    models = build_net(12, using_SE=use_SE, using_white_norm=use_white_norm)
+    models.load_weights(model)
+    return models
+
+def load_C3AE2(model,  use_SE, use_white_norm):
+    from C3AE_expand import build_net3, model_refresh_without_nan 
+    models = build_net3(12, using_SE=use_SE, using_white_norm=use_white_norm)
+    if model:
+        models.load_weights(model)
+        model_refresh_without_nan(models) ## hot fix which occur non-scientice gpu or cpu
+    return models
+
+
+def predict(models, img_path, use_SE = True, use_white_norm= True, model_path = './model/c3ae_model_v2_117_5.830443-0.955'):
+    img = cv2.imread(img_path)
+    models = load_branch(params)
+
+
     try:
         bounds, lmarks = gen_face(MTCNN_DETECT, img, only_one=False)
         ret = MTCNN_DETECT.extract_image_chips(img, lmarks, padding=0.4)
