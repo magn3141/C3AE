@@ -2,7 +2,7 @@ from datetime import datetime
 import sys
 import os
 from unittest import result
-sys.path.append("./")
+sys.path.append("./nets")
 import cv2
 import numpy as np
 import mxnet as mx
