@@ -99,4 +99,4 @@ typing-extensions==3.7.4
 urllib3==1.24.1
 Werkzeug==0.15.0
 wrapt==1.11.1
-deepface
+deepface==0.0.75
