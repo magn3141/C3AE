@@ -129,7 +129,7 @@ def folder_imgs(params):
             prediction = predict(models, cv2.imread(f), False, out + "/"+filename)
             result.append((filename, prediction[1]))
 
-    orders = []
+    orders = {}
     all_ages = {}
     for seed in seeds:
         base_image = f"{model}_{seed}"
@@ -145,14 +145,14 @@ def folder_imgs(params):
         print(ages)
         order = get_age_order(ages)
 
-        orders.append((seed, order))
+        orders[seed] = order
     with open(out + "/age" + model + ".json", "w") as f:
         out_ = {"orders": orders}
         f.write(json.dumps(out_))
 
     with open(out + "/age" + model + "_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + ".txt", "w") as f:
         f.write(directory + "\n")
-        for seed, order in orders:
+        for seed, order in orders.items():
             f.write("%s \n" % seed)
             f.write("\n")
             for name in order:
