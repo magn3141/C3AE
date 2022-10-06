@@ -104,7 +104,7 @@ def build_shared_plain_network(height=64, width=64, channel=3, using_white_norm=
     #shape = map(int, conv5.get_shape()[1:])
     #shrinking_op = Lambda(lambda x: K.reshape(x, (-1, np.prod(shape))))(conv5)
 
-    pmodel = Model(input_image, [flat_conv])
+    pmodel = Model(input=input_image, output=[flat_conv])
     return pmodel
 
 def build_net(CATES=12, height=64, width=64, channel=3, using_white_norm=True, using_SE=True):
