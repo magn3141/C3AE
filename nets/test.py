@@ -91,17 +91,17 @@ def test_img(params):
 
 
 def find_base_seeds(directory):
-  seeds = set()
-  number_of_images = set()
-  for filename in os.listdir(directory):
-    filename = filename.split(".")[0]
-    filename_split = filename.split("_")
-    img_id = filename_split[1]
-    seed = filename_split[2]
-    age_number = filename_split[3]
-    seeds.add(f"{img_id}_{seed}")
-    number_of_images.add(age_number)
-  return (seeds, len(number_of_images))
+    seeds = set()
+    number_of_images = set()
+    for filename in os.listdir(directory):
+        filename = filename.split(".")[0]
+        filename_split = filename.split("_")
+        img_id = filename_split[1]
+        seed = filename_split[2]
+        age_number = filename_split[3]
+        seeds.add(f"{img_id}_{seed}")
+        number_of_images.add(age_number)
+    return (seeds, len(number_of_images))
 
 def get_age_order(ages):
   sorted_ages = sorted(ages.items(), key=lambda d:d[1])
