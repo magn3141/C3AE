@@ -133,7 +133,9 @@ def folder_imgs(params):
         base_image = f"{model}_{seed}"
         ages = {}
         for id in range(number_of_images):
-            age, _ = predict(models, cv2.imread(f"{directory}{model}/{base_image}_{id}.jpg"), False, out + "/"+filename)
+            file = f"{directory}/{model}/{base_image}_{id}.jpg"
+            print(file)
+            age, _ = predict(models, cv2.imread(file), False, out + "/"+filename)
             ages[id] = age
         input_age,_ = predict(models, cv2.imread(f"{directory}/input/stylegan3_{seed}.jpg"), False, out + "/"+filename)
         ages["input"] = input_age
