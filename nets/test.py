@@ -104,8 +104,8 @@ def find_base_seeds(directory):
     return (seeds, len(number_of_images))
 
 def get_age_order(ages):
-  sorted_ages = sorted(ages.items(), key=lambda d:d[1])
-  return [age[0] for age in sorted_ages]
+    sorted_ages = sorted(ages.items(), key=lambda d:d[1])
+    return [age[0] for age in sorted_ages]
 
 def folder_imgs(params):
     models = load_branch(params)
@@ -119,6 +119,8 @@ def folder_imgs(params):
     result = []
 
     seeds, number_of_images = find_base_seeds(directory + "/" + model)
+    print(seeds)
+    print(number_of_images)
 
     for filename in os.listdir(directory):
         f = os.path.join(directory, filename)
@@ -140,7 +142,9 @@ def folder_imgs(params):
         input_age,_ = predict(models, cv2.imread(f"{directory}/input/stylegan3_{seed}.jpg"), False, out + "/"+filename)
         ages["input"] = input_age
         all_ages[seed] = ages
+        print(ages)
         order = get_age_order(ages)
+
         orders.append((seed, order))
     with open(out + "/age" + model + ".json", "w") as f:
         out_ = {"orders": orders, "ages": all_ages}
