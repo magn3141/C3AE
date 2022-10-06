@@ -141,7 +141,8 @@ def folder_imgs(params):
         order = get_age_order(ages)
         orders.append((seed, order))
     with open(out + "/age" + model + ".json", "w") as f:
-        f.write(json.dumps(orders))
+        out_ = {"orders": orders, "ages": all_ages}
+        f.write(json.dumps(out_))
 
     with open(out + "/age" + model + "_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + ".txt", "w") as f:
         f.write(directory + "\n")
