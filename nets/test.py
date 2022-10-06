@@ -1,6 +1,7 @@
 from datetime import datetime
 import sys
 import os
+import json
 from unittest import result
 sys.path.append("./")
 import cv2
@@ -89,15 +90,35 @@ def test_img(params):
     predict(models, img, True)
 
 
+def find_base_seeds(directory):
+  seeds = set()
+  number_of_images = set()
+  for filename in os.listdir(directory):
+    filename = filename.split(".")[0]
+    filename_split = filename.split("_")
+    img_id = filename_split[1]
+    seed = filename_split[2]
+    age_number = filename_split[3]
+    seeds.add(f"{img_id}_{seed}")
+    number_of_images.add(age_number)
+  return (seeds, len(number_of_images))
+
+def get_age_order(ages):
+  sorted_ages = sorted(ages.items(), key=lambda d:d[1])
+  return [age[0] for age in sorted_ages]
+
 def folder_imgs(params):
     models = load_branch(params)
     # assign directory
     directory = params.folder
     out = params.output_folder
+    model = params.dataset
     
     # iterate over files in
     # that directory
     result = []
+
+    seeds, number_of_images = find_base_seeds(directory)
 
     for filename in os.listdir(directory):
         f = os.path.join(directory, filename)
@@ -105,12 +126,32 @@ def folder_imgs(params):
         if os.path.isfile(f) and filename.split('.')[-1] == 'jpg':
             prediction = predict(models, cv2.imread(f), False, out + "/"+filename)
             result.append((filename, prediction[1]))
-    
-    with open(out + "/C3AE_"+params.dataset+"_"+datetime.now().strftime("%Y_%m_%d_%H_%M_%S")+".txt", "w") as f:
-        f.write(params.folder + "\n")
-        f.write("filename, age, gender \n")
-        for r in result:
-            f.write("%s, %s, %s \n" % (r[0], r[1][0], r[1][1]))
+
+    orders = []
+    all_ages = {}
+    for seed in seeds:
+        base_image = f"{model}_{seed}"
+        ages = {}
+        for id in range(number_of_images):
+            age, _ = predict(models, cv2.imread(f"{dir}_{base_image}_{id}.jpg"), False, out + "/"+filename)
+            ages[id] = age
+        input_age,_ = predict(models, cv2.imread(f"{directory}/input/stylegan3_{seed}.jpg"), False, out + "/"+filename)
+        ages["input"] = input_age
+        all_ages[seed] = ages
+        order = get_age_order(ages)
+        orders.append((seed, order))
+    with open(out + "/age" + model + ".json", "w") as f:
+        f.write(json.dumps(orders))
+
+    with open(out + "/age" + model + "_" + datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + ".txt", "w") as f:
+        f.write(directory + "\n")
+        for seed, order in orders:
+            f.write("%s \n" % seed)
+            f.write("Order: ")
+            f.write(order)
+            f.write("\n")
+            for name in order:
+                f.write("%s, %s \n" % (name, all_ages[seed][name]))
     return result
     
 def video(params):

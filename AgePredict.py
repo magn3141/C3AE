@@ -15,7 +15,7 @@ MTCNN_DETECT = MtcnnDetector(model_folder=None, ctx=mx.cpu(0), num_worker=1, min
 class AgePredict:
     def __init__(self, model_path = './model/c3ae_model_v2_117_5.830443-0.955'):
         self.model_path = model_path
-        self.models = load_branch(model_path, False, True, True)
+        self.models = load_branch(model_path, True, True, True)
         
     def predict(self, img_path):
         img = cv2.imread(img_path)
