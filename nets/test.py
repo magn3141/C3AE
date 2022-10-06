@@ -118,7 +118,7 @@ def folder_imgs(params):
     # that directory
     result = []
 
-    seeds, number_of_images = find_base_seeds(directory)
+    seeds, number_of_images = find_base_seeds(directory + "/" + model)
 
     for filename in os.listdir(directory):
         f = os.path.join(directory, filename)
