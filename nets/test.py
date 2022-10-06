@@ -154,8 +154,6 @@ def folder_imgs(params):
         f.write(directory + "\n")
         for seed, order in orders:
             f.write("%s \n" % seed)
-            f.write("Order: ")
-            f.write(order)
             f.write("\n")
             for name in order:
                 f.write("%s, %s \n" % (name, all_ages[seed][name]))
