@@ -111,7 +111,6 @@ def folder_imgs(params):
     models = load_branch(params)
     # assign directory
     directory = params.folder
-    dirc
     out = params.output_folder
     model = params.dataset
     
